@@ -37,7 +37,7 @@ import org.apache.http.util.EntityUtils;
  * @file : HttpClientUtil.java
  * @date : 2017年3月24日
  * @author : LTChen
- * @email : LouPiPAlien@gmail.com
+ * @email : loupipalien@gmail.com
  * @desc : HttpClient工具类
  * 
  * 1、since 4.3 不再使用 DefaultHttpClient
@@ -47,16 +47,24 @@ import org.apache.http.util.EntityUtils;
 @SuppressWarnings("deprecation")
 public class HttpClientUtil {
 
+    /**
+     * 私有化默认构造器
+     */
+	private HttpClientUtil() {
+	}
+	
 	public static void main(String[] args){
-		HttpResponse httpResponse = HttpClientUtil.doGet("http://www.baidu.com", null, null, null);
-		try {
-			System.out.println(EntityUtils.toString(httpResponse.getEntity(),DEFAULT_CHARSET));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for (int i = 0; i < 100; i++) {
+			HttpResponse httpResponse = HttpClientUtil.doGet("http://www.baidu.com", null, null, null);
+			try {
+				System.out.println(EntityUtils.toString(httpResponse.getEntity(),DEFAULT_CHARSET));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
