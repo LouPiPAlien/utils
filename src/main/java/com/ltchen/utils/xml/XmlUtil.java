@@ -19,7 +19,7 @@ import de.odysseus.staxon.xml.util.PrettyXMLEventWriter;
  * 
  * @file : XmlUtil.java
  * @date : 2017年3月28日
- * @author : LTChen
+ * @author : ltchen
  * @email : loupipalien@gmail.com
  * @desc : xml工具类
  */

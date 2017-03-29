@@ -10,7 +10,7 @@ import java.util.Properties;
  * 
  * @file : PropertyUtil.java
  * @date : 2017年3月28日
- * @author : LTChen
+ * @author : ltchen
  * @email : loupipalien@gmail.com
  * @desc : property工具类
  */

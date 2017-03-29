@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
  * 
  * @file : StringUtil.java
  * @date : 2017年3月28日
- * @author : LTChen
+ * @author : ltchen
  * @email : loupipalien@gmail.com
  * @desc : String工具类
  */

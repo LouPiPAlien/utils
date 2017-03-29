@@ -13,7 +13,6 @@ import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -21,6 +20,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
@@ -28,15 +28,17 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
 /**
  * 
  * @file : HttpClientUtil.java
  * @date : 2017年3月24日
- * @author : LTChen
+ * @author : ltchen
  * @email : loupipalien@gmail.com
  * @desc : HttpClient工具类
  * 
@@ -47,6 +49,8 @@ import org.apache.http.util.EntityUtils;
 @SuppressWarnings("deprecation")
 public class HttpClientUtil {
 
+	private static Logger logger = Logger.getLogger(HttpClientUtil.class);
+	
     /**
      * 私有化默认构造器
      */
@@ -54,18 +58,16 @@ public class HttpClientUtil {
 	}
 	
 	public static void main(String[] args){
-		for (int i = 0; i < 100; i++) {
-			HttpResponse httpResponse = HttpClientUtil.doGet("http://www.baidu.com", null, null, null);
-			try {
-				System.out.println(EntityUtils.toString(httpResponse.getEntity(),DEFAULT_CHARSET));
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		
+//		 // 记录debug级别的信息  
+//        logger.debug("This is debug message.");  
+//        // 记录info级别的信息  
+//        logger.info("This is info message.");  
+//        // 记录error级别的信息  
+//        logger.error("This is error message.");  
+	
+		String result = HttpClientUtil.doGet("http://127.0.0.1:8080/", null, null, null);
+		System.out.println(result);
 	}
 	
     private static final String DEFAULT_CHARSET = "UTF-8";
@@ -78,13 +80,10 @@ public class HttpClientUtil {
      * @param charset
      * @return
      */
-	public static HttpResponse doGet(String url, Map<String, String> headerMap, Map<String, String> paramMap,
-			String charset) {
-		//4.3版本以后不再使用DefaultHttpClient
-		CloseableHttpClient closeableHttpClient = HttpClientBuilder.create().build();
+	public static String doGet(String url, Map<String, String> paramMap, Map<String, String> headerMap, String charset) {
+		CloseableHttpClient closeableHttpClient = HttpClients.createDefault();
 		CloseableHttpResponse closeableHttpResponse = null;
-		HttpResponse httpResponse = null;
-		HttpGet httpGet = null;
+		String result = null;
 		if( charset == null ){
 			charset = DEFAULT_CHARSET;
 		}
@@ -101,7 +100,8 @@ public class HttpClientUtil {
 			}
 			sb.deleteCharAt(sb.length() - 1);
 		}
-		httpGet = new HttpGet(sb.toString());
+		//获取一个HttpGet对象
+		HttpGet httpGet = new HttpGet(sb.toString());
 		// 设置请求头
 		if(headerMap != null){
 			for (String key : headerMap.keySet()) {
@@ -111,32 +111,35 @@ public class HttpClientUtil {
 		try {
 			closeableHttpResponse = closeableHttpClient.execute(httpGet);
 			if ( closeableHttpResponse != null){
-				//设置响应行
-				httpResponse = new BasicHttpResponse(closeableHttpResponse.getStatusLine());
-				//设置响应头
-				httpResponse.setHeaders(closeableHttpResponse.getAllHeaders());
-				//设置响应体
-				httpResponse.setEntity(closeableHttpResponse.getEntity());;
+				if(closeableHttpResponse.getStatusLine().getStatusCode() == 200){
+					HttpEntity httpEntity = new BufferedHttpEntity(closeableHttpResponse.getEntity());
+					result = EntityUtils.toString(httpEntity, charset);
+				}
+				else{
+					logger.info(closeableHttpResponse.getStatusLine().toString());
+					logger.info(closeableHttpResponse.getAllHeaders().toString());
+					logger.info(closeableHttpResponse.getEntity().toString());
+				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		}catch (IOException e) {
+			logger.error("IOException was catched:",e);
 		}finally {
-//			if (closeableHttpResponse != null){
-//				try {
-//					closeableHttpResponse.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//			if (closeableHttpClient != null){
-//				try {
-//					closeableHttpClient.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
+			if (closeableHttpResponse != null){
+				try {
+					closeableHttpResponse.close();
+				} catch (IOException e) {
+					logger.error("CloseableHttpResponse close failed:",e);
+				}
+			}
+			if (closeableHttpClient != null){
+				try {
+					closeableHttpClient.close();
+				} catch (IOException e) {
+					logger.error("CloseableHttpClient close failed:",e);
+				}
+			}
 		}
-		return httpResponse;
+		return result;
 	}
 
 	public static HttpResponse doPost(String url, Map<String, String> headerMap, Map<String, String> entityMap,
