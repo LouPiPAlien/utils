@@ -17,7 +17,7 @@ import java.util.Properties;
 public class PropertyUtil {
 
 	/**
-     * propPath：默认加载resource文件夹下的文件名,多层目录写相对路径
+     * propPath：默认加载resource文件夹下的文件名,多层目录写相对路径,不以/开头
      * @param propPath
      * @param clazz
      * @return
