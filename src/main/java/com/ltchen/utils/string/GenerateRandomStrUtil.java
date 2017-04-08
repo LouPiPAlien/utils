@@ -12,7 +12,6 @@ public class GenerateRandomStrUtil {
     */
     private GenerateRandomStrUtil() {}
     
-	
 	public static enum Type {
 	       /**
 	        * 小写字符型
