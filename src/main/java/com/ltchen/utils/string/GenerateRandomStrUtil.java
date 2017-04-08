@@ -7,9 +7,7 @@ import java.util.Random;
 
 public class GenerateRandomStrUtil {
 
-	 /**
-     * 私有化默认构造器
-     */
+
     private GenerateRandomStrUtil() {}
     
 	
